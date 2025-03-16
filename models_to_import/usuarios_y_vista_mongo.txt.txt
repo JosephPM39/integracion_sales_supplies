@@ -1,0 +1,63 @@
+=================== CREACION DE USUARIO ===================================
+
+db.createUser({
+	user: "extractsql",
+	pwd: "GHHI7hJ3vaKTwR&*",
+	roles: [{ role: "read", db: "sample_supplies" }]
+});
+
+db.createUser({
+	user: "admin_integration",
+	pwd: "wsHUf2ezW8Xh3S*d",
+	roles: ["userAdminAnyDatabase"]
+});
+
+db.updateUser("admin_integration", {
+	roles: [
+		"userAdminAnyDatabase",
+		"read",
+		"readWrite",
+		"readAnyDatabase",
+		"readWriteAnyDatabase"
+	]
+});
+
+=================== CREACION DE LA VISTA MONGO DB =======================
+
+db.sales.aggregate([
+	{ $unwind: "$items" },
+	{ $unwind: "$customer" },
+	{ $project: {
+		_id: 1,
+		saleDate: 1,
+		itemName: "$items.name",
+		itemPrice: "$items.price",
+		itemQuantity: "$items.quantity",
+		storeLocation: 1,
+		customerGender: "$customer.gender",
+		customerAge: "$customer.age",
+		customerEmail: "$customer.email",
+		customerSatisfaction: "$customer.satisfaction",
+		couponUsed: 1,
+		purchaseMethod: 1
+	}}
+]);
+
+db.createView("items_sales", "sales", [
+	{ $unwind: "$items" },
+	{ $unwind: "$customer" },
+	{ $project: {
+		_id: 1,
+		saleDate: 1,
+		itemName: "$items.name",
+		itemPrice: "$items.price",
+		itemQuantity: "$items.quantity",
+		storeLocation: 1,
+		customerGender: "$customer.gender",
+		customerAge: "$customer.age",
+		customerEmail: "$customer.email",
+		customerSatisfaction: "$customer.satisfaction",
+		couponUsed: 1,
+		purchaseMethod: 1
+	}}
+]);
